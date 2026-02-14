@@ -1,0 +1,157 @@
+// Turf Booking SAAS Application Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  CUSTOMER
+  TURF_OWNER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum TurfType {
+  CRICKET
+  FOOTBALL
+  BADMINTON
+  TENNIS
+  MULTI_SPORT
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  password      String
+  phone         String?
+  role          UserRole  @default(CUSTOMER)
+  image         String?
+  emailVerified Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  turfs         Turf[]
+  bookings      Booking[]
+  reviews       Review[]
+  payments      Payment[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Turf {
+  id          String     @id @default(cuid())
+  name        String
+  description String
+  address     String
+  city        String
+  state       String
+  pincode     String
+  latitude    Float?
+  longitude   Float?
+  type        TurfType
+  pricePerHour Float
+  images      String[]
+  amenities   String[]
+  rules       String[]
+  isActive    Boolean    @default(true)
+  openTime    String     // Format: "HH:mm"
+  closeTime   String     // Format: "HH:mm"
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  ownerId     String
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  bookings    Booking[]
+  reviews     Review[]
+
+  @@index([ownerId])
+  @@index([city])
+  @@index([type])
+  @@index([isActive])
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  bookingDate DateTime
+  startTime   String        // Format: "HH:mm"
+  endTime     String        // Format: "HH:mm"
+  totalHours  Int
+  totalAmount Float
+  status      BookingStatus @default(PENDING)
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  turfId      String
+  turf        Turf          @relation(fields: [turfId], references: [id], onDelete: Cascade)
+  payment     Payment?
+
+  @@index([userId])
+  @@index([turfId])
+  @@index([bookingDate])
+  @@index([status])
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  amount          Float
+  status          PaymentStatus @default(PENDING)
+  paymentMethod   String?       // UPI, Card, NetBanking, etc.
+  transactionId   String?       @unique
+  paymentGateway  String?       // Stripe, Razorpay, etc.
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  bookingId       String        @unique
+  booking         Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([transactionId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  turfId    String
+  turf      Turf     @relation(fields: [turfId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, turfId])
+  @@index([turfId])
+  @@index([rating])
+}
