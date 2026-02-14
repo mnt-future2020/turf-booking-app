@@ -2,11 +2,37 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, Clock, Filter, Search, ArrowLeft, XCircle, CheckCircle } from 'lucide-react';
 
 export default function BookingsPage() {
+  const router = useRouter();
   const [filter, setFilter] = useState('all');
+
+  const handlePayNow = (bookingId: string, amount: number) => {
+    if (confirm(`Proceed to pay ₹${amount}?`)) {
+      alert('Redirecting to payment gateway...');
+      // Add payment logic here
+    }
+  };
+
+  const handleCancelBooking = (bookingId: string) => {
+    if (confirm('Are you sure you want to cancel this booking?')) {
+      alert('Booking cancelled successfully!');
+      // Add cancel logic here
+    }
+  };
+
+  const handleWriteReview = (bookingId: string) => {
+    alert('Review form coming soon!');
+    // Navigate to review page
+  };
+
+  const handleViewDetails = (bookingId: string) => {
+    alert(`Viewing booking details for ID: ${bookingId}`);
+    // Navigate to booking detail page
+  };
   const [bookings] = useState([
     {
       id: '1',
@@ -220,26 +246,49 @@ export default function BookingsPage() {
                     <div className="flex gap-2">
                       {booking.status === 'pending' && (
                         <>
-                          <Button size="sm" variant="outline">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handlePayNow(booking.id, booking.amount)}
+                          >
                             Pay Now
                           </Button>
-                          <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-red-600 hover:text-red-700"
+                            onClick={() => handleCancelBooking(booking.id)}
+                          >
                             Cancel
                           </Button>
                         </>
                       )}
                       {booking.status === 'confirmed' && (
-                        <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="text-red-600 hover:text-red-700"
+                          onClick={() => handleCancelBooking(booking.id)}
+                        >
                           <XCircle className="h-4 w-4 mr-1" />
                           Cancel Booking
                         </Button>
                       )}
                       {booking.status === 'completed' && (
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleWriteReview(booking.id)}
+                        >
                           Write Review
                         </Button>
                       )}
-                      <Button size="sm">View Details</Button>
+                      <Button 
+                        size="sm"
+                        onClick={() => handleViewDetails(booking.id)}
+                      >
+                        View Details
+                      </Button>
                     </div>
                   </div>
                 </div>

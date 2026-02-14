@@ -63,8 +63,8 @@ function TurfCard({
   image: string;
 }) {
   return (
-    <Link href={`/turfs/${id}`}>
-      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+      <Link href={`/turfs/${id}`} className="block">
         <div className="h-48 bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
           <MapPin className="h-16 w-16 text-white opacity-50" />
         </div>
@@ -84,10 +84,10 @@ function TurfCard({
           </div>
           <div className="flex items-center justify-between">
             <span className="text-2xl font-bold text-green-600">{price}</span>
-            <Button>View Details</Button>
+            <span className="text-sm text-green-600 font-medium hover:underline">View Details →</span>
           </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 }

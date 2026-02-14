@@ -2,16 +2,26 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, Clock, User, CreditCard, Settings, LogOut } from 'lucide-react';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [user] = useState({
     name: 'John Doe',
     email: 'john@example.com',
     role: 'customer',
     joinedDate: 'Jan 2024'
   });
+
+  const handleLogout = () => {
+    if (confirm('Are you sure you want to logout?')) {
+      // Add logout logic here (clear session, etc.)
+      alert('Logged out successfully!');
+      router.push('/');
+    }
+  };
 
   const [stats] = useState({
     totalBookings: 12,
@@ -94,13 +104,17 @@ export default function DashboardPage() {
                     My Bookings
                   </div>
                 </Link>
-                <Link href="/dashboard/profile">
-                  <div className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-md transition-colors">
-                    <Settings className="h-5 w-5 mr-3" />
-                    Profile Settings
-                  </div>
-                </Link>
-                <button className="w-full flex items-center px-4 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors">
+                <button 
+                  onClick={() => alert('Profile settings coming soon!')}
+                  className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-md transition-colors text-left"
+                >
+                  <Settings className="h-5 w-5 mr-3" />
+                  Profile Settings
+                </button>
+                <button 
+                  onClick={handleLogout}
+                  className="w-full flex items-center px-4 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                >
                   <LogOut className="h-5 w-5 mr-3" />
                   Logout
                 </button>

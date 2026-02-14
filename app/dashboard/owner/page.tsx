@@ -2,10 +2,28 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { MapPin, DollarSign, Calendar, TrendingUp, Plus, Edit, Trash, Eye } from 'lucide-react';
 
 export default function OwnerDashboardPage() {
+  const router = useRouter();
+
+  const handleViewTurf = (turfId: string) => {
+    router.push(`/turfs/${turfId}`);
+  };
+
+  const handleEditTurf = (turfId: string) => {
+    alert(`Edit turf page coming soon for turf ID: ${turfId}`);
+    // router.push(`/dashboard/owner/turfs/${turfId}/edit`);
+  };
+
+  const handleDeleteTurf = (turfId: string, turfName: string) => {
+    if (confirm(`Are you sure you want to delete "${turfName}"? This action cannot be undone.`)) {
+      alert('Turf deleted successfully!');
+      // Add delete logic here
+    }
+  };
   const [stats] = useState({
     totalTurfs: 3,
     activeTurfs: 2,
@@ -186,13 +204,29 @@ export default function OwnerDashboardPage() {
                       <span className="text-green-600 font-medium">₹{turf.revenue.toLocaleString()}</span>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleViewTurf(turf.id)}
+                        title="View Turf"
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleEditTurf(turf.id)}
+                        title="Edit Turf"
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="outline" className="text-red-600">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="text-red-600 hover:bg-red-50"
+                        onClick={() => handleDeleteTurf(turf.id, turf.name)}
+                        title="Delete Turf"
+                      >
                         <Trash className="h-4 w-4" />
                       </Button>
                     </div>
